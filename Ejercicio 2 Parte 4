@@ -1,0 +1,38 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import CubicSpline
+
+# 1. ENTRADA DE DATOS DE TELEMETRÍA BIOMÉDICA
+f = np.array([10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0, 32.5, 35.0, 37.5, 40.0, 42.5, 
+              45.0, 47.5, 50.0, 52.5, 55.0, 57.5, 60.0, 62.5, 65.0, 67.5, 70.0, 72.5, 75.0, 
+              77.5, 80.0, 82.5, 85.0, 87.5, 90.0, 92.5, 95.0, 97.5, 100.0, 102.5, 105.0, 107.5])
+
+Z = np.array([182.4, 178.9, 175.1, 171.0, 166.8, 162.7, 158.9, 155.4, 152.0, 149.0, 146.1, 145.2, 145.8, 147.3,
+              149.9, 153.5, 158.0, 163.2, 168.9, 174.8, 180.5, 186.2, 191.5, 196.2, 200.1, 203.1, 205.2,
+              206.3, 206.1, 204.7, 198.0, 194.4, 190.9, 187.8, 185.1, 183.0, 181.6, 180.8, 180.6, 180.9])
+
+# 2. INTERPOLACIÓN FINA POR SPLINES CÚBICOS NATURALES
+f_fino = np.linspace(10.0, 107.5, 1000)
+cs_Z = CubicSpline(f, Z, bc_type='natural')
+
+# 3. CONSTRUCCIÓN DE LA GRÁFICA DE ADAPTACIÓN DE IMPEDANCIA
+plt.figure(figsize=(7.5, 4.5))
+plt.plot(f_fino, cs_Z(f_fino), color='#16a34a', linewidth=2, label='Magnitud de Impedancia $|Z(f)|$')
+plt.scatter(f, Z, color='#4ade80', s=20, alpha=0.6, zorder=3, label='Mediciones discretas')
+
+# Sombrear la ventana óptima recomendada para el informe (35.0 - 45.0 kHz)
+plt.axvspan(35.0, 45.0, color='#16a34a', alpha=0.1, label='Banda Óptima Recomendada')
+plt.text(35.5, 175, 'Máxima Adaptación\nde Impedancia', color='#166534', fontsize=9, fontweight='bold')
+
+plt.title('Parte 4: Perfil de Impedancia Equivalente del Biosensor')
+plt.xlabel('Frecuencia $f$ (kHz)')
+plt.ylabel('Impedancia Equivalente $|Z|$ ($\Omega$)')
+plt.xlim(5, 112)
+plt.ylim(140, 215)
+plt.grid(True, linestyle=':', alpha=0.6)
+plt.legend(frameon=True, facecolor='white', loc='upper right')
+plt.tight_layout()
+
+# Guardar la imagen en alta resolución y mostrar en pantalla
+plt.savefig('plot_d.png', dpi=300)
+plt.show()
